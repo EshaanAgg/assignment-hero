@@ -17,6 +17,7 @@ const handleLogout = async () => {
       <h1><NuxtLink to="/">Assignment Hero</NuxtLink></h1>
       <div class="links">
         <div v-if="user">
+          <NuxtLink to="/assignments/create">Create a new Assignment</NuxtLink>
           <button @click="handleLogout">Logout</button>
         </div>
         <div v-else>
