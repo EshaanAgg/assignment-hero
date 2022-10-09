@@ -1,12 +1,28 @@
+<script setup>
+import { useAccountStore } from "@/stores/account";
+const accountStore = useAccountStore();
+const user = computed(() => accountStore.account);
+
+const handleLogout = async () => {
+  await accountStore.logout();
+  console.log("User logged out");
+  await navigateTo("/login");
+};
+</script>
+
 <template>
   <div class="navbar">
     <nav>
       <img src="@/assets/logo.png" alt="Logo" />
       <h1><NuxtLink to="/">Assignment Hero</NuxtLink></h1>
       <div class="links">
-        <button>Logout</button>
-        <NuxtLink class="btn" to="/signup">Sign Up</NuxtLink>
-        <NuxtLink class="btn" to="/login">Login</NuxtLink>
+        <div v-if="user">
+          <button @click="handleLogout">Logout</button>
+        </div>
+        <div v-else>
+          <NuxtLink class="btn" to="/signup">Sign Up</NuxtLink>
+          <NuxtLink class="btn" to="/login">Login</NuxtLink>
+        </div>
       </div>
     </nav>
   </div>
