@@ -1,8 +1,14 @@
 <script setup>
+import { useAssignmentStore } from "@/stores/assignment";
+import { useGlobalStore } from "@stores/global";
+
+const globalStore = useGlobalStore();
+
 const title = ref("");
 const description = ref("");
 const file = ref(null);
 const fileError = ref(null);
+const error = computed(() => globalStore.error);
 const allowedTypes = ["image/png", "image/jpeg"];
 
 const handleChange = (e) => {
@@ -16,8 +22,18 @@ const handleChange = (e) => {
     fileError.value = "Please select an image file (png or jpg).";
   }
 };
-const handleSubmit = async () => {
-  // Logic goes here
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  // Add logic to upload the file to the cloud, store it in "covers\user_uid\filename"
+  // Get download link from the storage, right now we are using a dummy one
+  const downloadLink = "";
+  const data = {
+    title: title.value,
+    description: description.value,
+    cover: downloadLink,
+  };
+  const assignmentStore = useAssignmentStore();
+  await assignmentStore.addAssignment(data);
 };
 </script>
 <template>
@@ -43,7 +59,9 @@ const handleSubmit = async () => {
     />
     <label for="cover">Cover Image</label>
     <input type="file" id="cover" name="cover" @change="handleChange" />
-    <div class="error" v-if="fileError">{{ fileError }}</div>
+    <div class="error" v-if="fileError || error.show">
+      {{ (fileError, error.message) }}
+    </div>
     <button
       @click="handleSubmit"
       :disabled="!title || !description || fileError"
