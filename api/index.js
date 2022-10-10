@@ -8,13 +8,17 @@ const api = {
     if (api.sdk) {
       return api.sdk;
     }
-    let appwrite = new Appwrite();
-    appwrite.setEndpoint($config.endpoint).setProject($config.project);
-    const account = new Account(appwrite);
-    const database = new Databases(appwrite, $config.database);
 
+    let appwrite = new Appwrite();
+
+    const config = useRuntimeConfig().public;
+    appwrite.setEndpoint(config.endpoint).setProject(config.project);
+
+    const account = new Account(appwrite);
+    const database = new Databases(appwrite, config.database);
     api.sdk = { database, account };
-    return appwrite;
+
+    return api.sdk;
   },
 
   // Register a user in the backend

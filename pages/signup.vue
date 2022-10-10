@@ -56,5 +56,6 @@ const handleSubmit = async () => {
     name: name.value,
   });
   isPending.value = false;
+  navigateTo("/assignments");
 };
 </script>

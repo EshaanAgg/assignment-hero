@@ -44,5 +44,6 @@ const handleSubmit = async () => {
     password: password.value,
   });
   isPending.value = false;
+  navigateTo("/assignments");
 };
 </script>
