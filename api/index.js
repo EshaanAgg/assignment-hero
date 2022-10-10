@@ -1,5 +1,4 @@
 import { Client as Appwrite, Databases, Account } from "appwrite";
-import { Server } from "../utils/config.js";
 
 // Exporting some most commonly used functions
 const api = {
@@ -10,9 +9,9 @@ const api = {
       return api.sdk;
     }
     let appwrite = new Appwrite();
-    appwrite.setEndpoint(Server.endpoint).setProject(Server.project);
+    appwrite.setEndpoint($config.endpoint).setProject($config.project);
     const account = new Account(appwrite);
-    const database = new Databases(appwrite, Server.database);
+    const database = new Databases(appwrite, $config.database);
 
     api.sdk = { database, account };
     return appwrite;
