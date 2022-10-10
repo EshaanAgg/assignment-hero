@@ -14,9 +14,23 @@ export const useAssignmentStore = defineStore("assignment", {
     assignments: [],
   }),
   actions: {
+    async getAssignment(documentId) {
+      try {
+        const data = await api.getDocument(documentId);
+        return data;
+      } catch (e) {
+        console.log("Could not fetch document ", e);
+        const globalStore = useGlobalStore();
+        globalStore.setError({
+          show: true,
+          message: "Failed to fetch the assignment.",
+        });
+      }
+    },
     async fetchAssignments() {
       try {
         const data = await api.listDocuments(Server.assignmentCollectionID);
+        this.assignments = data.documents;
       } catch (e) {
         console.log("Could not fetch documents ", e);
         const globalStore = useGlobalStore();
@@ -40,10 +54,10 @@ export const useAssignmentStore = defineStore("assignment", {
         );
         // Only the particular user has read and write access to the same
         this.assignments.push(response);
+        return response;
       } catch (e) {
         console.log("Could not create document", e);
         const globalStore = useGlobalStore();
-
         globalStore.setError({
           show: true,
           message: "Failed to this assignment group",

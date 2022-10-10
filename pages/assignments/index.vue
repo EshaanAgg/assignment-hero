@@ -2,7 +2,11 @@
   <div class="home">
     <div v-if="error.show" class="error">{{ error.meesage }}</div>
     <div v-else-if="assignments">
-      <AssignmentTile v-for="doc in assignments" :key="doc[$id]" :doc="doc" />
+      <div v-for="doc in assignments" :key="doc[$id]">
+        <NuxtLink :to="`/assignments/${doc[$id]}`">
+          <AssignmentTile :doc="doc" />
+        </NuxtLink>
+      </div>
     </div>
     <div v-else>There no created assignment groups. Add one!</div>
   </div>

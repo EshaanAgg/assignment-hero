@@ -11,6 +11,7 @@ const description = ref("");
 const file = ref(null);
 const fileError = ref(null);
 const error = computed(() => globalStore.error);
+const account = computed(() => accountStore.account);
 const isPending = ref(false);
 const allowedTypes = ["image/png", "image/jpeg"];
 
@@ -25,6 +26,7 @@ const handleChange = (e) => {
     fileError.value = "Please select an image file (png or jpg).";
   }
 };
+
 const handleSubmit = async (e) => {
   isPending.value = true;
   e.preventDefault();
@@ -37,14 +39,20 @@ const handleSubmit = async (e) => {
     coverUrl: downloadLink,
     filePath: filePath.value,
     records: [],
-    username: accountStore.account.name,
+    createdBy: account["$id"],
+    username: account.name,
     createdAt: timestamp(),
   };
   const assignmentStore = useAssignmentStore();
-  await assignmentStore.addAssignment(data);
+  const newAssignment = await assignmentStore.addAssignment(data);
   isPending.value = false;
+  if (!error) {
+    const redirectId = newAssignment[$id];
+    navigateTo(`/assignments/${redirectId}`);
+  }
 };
 </script>
+
 <template>
   <form>
     <h4>Create New Assignment</h4>

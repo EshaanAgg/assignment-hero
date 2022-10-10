@@ -58,6 +58,9 @@ const api = {
     return api.provider().database.listDocuments(collectionId);
   },
 
+  listDocument: (documentId) => {
+    return api.provider().database.getDocument(documentId);
+  },
   // Update a given document with the relevant data
   // Has all the same arguments as createDocument, except for an additional identifier documentId to point to which document to update
   updateDocument: (collectionId, documentId, data, read, write) => {
