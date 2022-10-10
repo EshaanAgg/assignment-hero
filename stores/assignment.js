@@ -4,8 +4,6 @@ import { useGlobalStore } from "./global";
 import { useAccountStore } from "./account";
 import api from "@/api";
 
-const globalStore = useGlobalStore();
-const accountStore = useAccountStore();
 /* 
 All the actions in this store automatically fetch/add the the documents for the current user due to creation of a session with Appwrite
 Thus you can directly use these from the pages without worrying about the current user
@@ -21,6 +19,7 @@ export const useAssignmentStore = defineStore("assignment", {
         const data = await api.listDocuments(Server.assignmentCollectionID);
       } catch (e) {
         console.log("Could not fetch documents ", e);
+        const globalStore = useGlobalStore();
         globalStore.setError({
           show: true,
           message: "Failed to fetch assignments",
@@ -29,6 +28,8 @@ export const useAssignmentStore = defineStore("assignment", {
     },
     async addAssignment(data) {
       try {
+        const accountStore = useAccountStore();
+
         const userId = accountStore.account["$id"];
         data.userId = userId;
         const response = await api.createDocument(
@@ -41,6 +42,8 @@ export const useAssignmentStore = defineStore("assignment", {
         this.assignments.push(response);
       } catch (e) {
         console.log("Could not create document", e);
+        const globalStore = useGlobalStore();
+
         globalStore.setError({
           show: true,
           message: "Failed to this assignment group",
@@ -56,6 +59,8 @@ export const useAssignmentStore = defineStore("assignment", {
       );
     } catch (e) {
       console.log("Could not delete document", e);
+      const globalStore = useGlobalStore();
+
       globalStore.setError({
         show: true,
         message: "Failed to delete Todo",
@@ -64,6 +69,8 @@ export const useAssignmentStore = defineStore("assignment", {
   },
   async updateAssignment({ documentId, data }) {
     try {
+      const accountStore = useAccountStore();
+
       const userId = accountStore.account["$id"];
       data.userId = userId;
       const response = await api.updateDocument(
@@ -79,6 +86,8 @@ export const useAssignmentStore = defineStore("assignment", {
       if (index !== -1) this.assignments.splice(index, 1, response);
     } catch (e) {
       console.log("Could not update document", e);
+      const globalStore = useGlobalStore();
+
       globalStore.setError({
         show: true,
         message: "Failed to updated Todo",

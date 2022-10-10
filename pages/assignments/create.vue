@@ -1,8 +1,7 @@
 <script setup>
 import { useAssignmentStore } from "@/stores/assignment";
-import { useGlobalStore } from "@stores/global";
-import { useAccountStore } from "@stores/account";
-import { useAccountStore } from "../../stores/account";
+import { useGlobalStore } from "@/stores/global";
+import { useAccountStore } from "@/stores/account";
 
 const globalStore = useGlobalStore();
 const accountStore = useAccountStore();
