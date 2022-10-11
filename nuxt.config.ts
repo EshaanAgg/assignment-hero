@@ -8,7 +8,7 @@ export default defineNuxtConfig({
       project: process.env.NUXT_APP_PROJECT,
       assignmentCollectionID: process.env.NUXT_APP_ASSIGNMENT_COLLECTION_ID,
       fileCollectionID: process.env.NUXT_APP_FILE_COLLECTION_ID,
-      database: process.env.NUXT_APP_DATABASE_ID.toString(),
+      databaseID: process.env.NUXT_APP_DATABASE_ID.toString(),
     },
   },
 });

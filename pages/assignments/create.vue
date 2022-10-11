@@ -11,7 +11,7 @@ const description = ref("");
 const file = ref(null);
 const fileError = ref(null);
 const error = computed(() => globalStore.error);
-const account = computed(() => accountStore.account);
+await accountStore.fetchAccount();
 const isPending = ref(false);
 const allowedTypes = ["image/png", "image/jpeg"];
 
@@ -32,25 +32,33 @@ const handleSubmit = async (e) => {
   e.preventDefault();
   // Add logic to upload the file to the cloud, store it in "covers\user_uid\filename"
   // Get download link from the storage, right now we are using a dummy one
-  const downloadLink = "";
+  const filePath = { value: "" };
+  const downloadLink = "https://github.com/appwrite/demo-todo-with-vue/blob/main/src/store/modules/account.js";
   const data = {
     title: title.value,
     description: description.value,
     coverUrl: downloadLink,
     filePath: filePath.value,
     records: [],
-    createdBy: account["$id"],
-    username: account.name,
-    createdAt: timestamp(),
+    createdBy : accountStore.account["$id"],
+    username: accountStore.account["name"],
+    createdAt: getTimestamp(),
   };
   const assignmentStore = useAssignmentStore();
   const newAssignment = await assignmentStore.addAssignment(data);
   isPending.value = false;
   if (!error) {
-    const redirectId = newAssignment[$id];
-    navigateTo(`/assignments/${redirectId}`);
+    const redirectId = newAssignment["$id"];
+    await navigateTo(`/assignments/${redirectId}`);
   }
 };
+
+function getTimestamp() {
+  var date = new Date();
+	var currentDate = date.getFullYear()+"-"+(date.getMonth()+1)+"-"+ date.getDate();
+	var currentTime = date.getHours()+":"+date.getMinutes()+":"+ date.getSeconds();
+	return currentDate+" "+currentTime;
+}
 </script>
 
 <template>

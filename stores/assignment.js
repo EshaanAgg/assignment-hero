@@ -1,4 +1,4 @@
-import { Role } from "appwrite";
+import { Permission, Role } from "appwrite";
 import { defineStore, acceptHMRUpdate } from "pinia";
 import { useGlobalStore } from "./global";
 import { useAccountStore } from "./account";
@@ -14,9 +14,14 @@ export const useAssignmentStore = defineStore("assignment", {
     assignments: [],
   }),
   actions: {
-    async getAssignment(documentId) {
+    async getAssignment(documentID) {
       try {
-        const data = await api.getDocument(documentId);
+        const Server = useRuntimeConfig().public;
+        const data = await api.getDocument(
+          Server.databaseID,
+          Server.assignmentCollectionID,
+          documentID
+        );
         return data;
       } catch (e) {
         console.log("Could not fetch document ", e);
@@ -29,7 +34,11 @@ export const useAssignmentStore = defineStore("assignment", {
     },
     async fetchAssignments() {
       try {
-        const data = await api.listDocuments(Server.assignmentCollectionID);
+        const Server = useRuntimeConfig().public;
+        const data = await api.listDocuments(
+          Server.databaseID,
+          Server.assignmentCollectionID
+        );
         this.assignments = data.documents;
       } catch (e) {
         console.log("Could not fetch documents ", e);
@@ -43,14 +52,18 @@ export const useAssignmentStore = defineStore("assignment", {
     async addAssignment(data) {
       try {
         const accountStore = useAccountStore();
+        const Server = useRuntimeConfig().public;
 
-        const userId = accountStore.account["$id"];
-        data.userId = userId;
+        const userID = accountStore.account["$id"];
+
         const response = await api.createDocument(
+          Server.databaseID,
           Server.assignmentCollectionID,
           data,
-          Role.any(),
-          [`user:${userId}`]
+          [
+            Permission.read(Role.user(userID)),
+            Permission.write(Role.user(userID)),
+          ]
         );
         // Only the particular user has read and write access to the same
         this.assignments.push(response);
@@ -60,16 +73,21 @@ export const useAssignmentStore = defineStore("assignment", {
         const globalStore = useGlobalStore();
         globalStore.setError({
           show: true,
-          message: "Failed to this assignment group",
+          message: "Failed to create this assignment.",
         });
       }
     },
   },
-  async deleteAssignment(documentId) {
+  async deleteAssignment(documentID) {
     try {
-      await api.deleteDocument(Server.assignmentCollectionID, documentId);
+      const Server = useRuntimeConfig().public;
+      await api.deleteDocument(
+        Server.databaseID,
+        Server.assignmentCollectionID,
+        documentID
+      );
       this.assignments = this.assignments.filter(
-        (document) => document["$id"] !== documentId
+        (document) => document["$id"] !== documentID
       );
     } catch (e) {
       console.log("Could not delete document", e);
@@ -77,22 +95,25 @@ export const useAssignmentStore = defineStore("assignment", {
 
       globalStore.setError({
         show: true,
-        message: "Failed to delete Todo",
+        message: "Failed to delete Assignment",
       });
     }
   },
-  async updateAssignment({ documentId, data }) {
+  async updateAssignment({ documentID, data }) {
     try {
       const accountStore = useAccountStore();
+      const Server = useRuntimeConfig().public;
+      const userID = accountStore.account["$id"];
 
-      const userId = accountStore.account["$id"];
-      data.userId = userId;
       const response = await api.updateDocument(
+        Server.databaseID,
         Server.assignmentCollectionID,
-        documentId,
+        documentID,
         data,
-        Role.any(),
-        [`user:${userId}`]
+        [
+          Permission.read(Role.user(userID)),
+          Permission.write(Role.user(userID)),
+        ]
       );
       const index = this.assignments.findIndex(
         (doc) => doc["$id"] === response["$id"]
@@ -101,15 +122,14 @@ export const useAssignmentStore = defineStore("assignment", {
     } catch (e) {
       console.log("Could not update document", e);
       const globalStore = useGlobalStore();
-
       globalStore.setError({
         show: true,
-        message: "Failed to updated Todo",
+        message: "Failed to updated Assignment",
       });
     }
   },
 });
 
 if (import.meta.hot) {
-  import.meta.hot.accept(acceptHMRUpdate(useAccountStore, import.meta.hot));
+  import.meta.hot.accept(acceptHMRUpdate(useAssignmentStore, import.meta.hot));
 }

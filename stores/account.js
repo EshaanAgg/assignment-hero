@@ -5,12 +5,8 @@ import api from "@/api";
 export const useAccountStore = defineStore("account", {
   state: () => ({
     account: null,
-    session: null,
   }),
   actions: {
-    setAccount: function (account) {
-      this.account = account;
-    },
     signup: async function ({ email, password, name }) {
       try {
         const account = await api.createAccount(email, password, name);
@@ -30,7 +26,8 @@ export const useAccountStore = defineStore("account", {
         const account = await api.getAccount();
         this.account = account;
       } catch (e) {
-        console.log("Error getting Account");
+        this.account = null;
+        console.log("Error getting Account", e);
       }
     },
     login: async function ({ email, password }) {

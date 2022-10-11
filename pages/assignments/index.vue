@@ -1,6 +1,6 @@
 <template>
   <div class="home">
-    <div v-if="error.show" class="error">{{ error.meesage }}</div>
+    <div v-if="error.show" class="error">{{ error.message }}</div>
     <div v-else-if="assignments">
       <div v-for="doc in assignments" :key="doc[$id]">
         <NuxtLink :to="`/assignments/${doc[$id]}`">
